@@ -1,7 +1,13 @@
 import asyncio
+import argparse
+import logging
+import os
 import re
+import subprocess
+import sys
 import time
 import uuid
+from pathlib import Path
 from typing import Optional
 
 import mcp.server.stdio
@@ -25,6 +31,7 @@ from memex.extraction import OllamaExtractionError, dedupe_and_filter_facts, ext
 from memex.search import search_memories
 
 server = Server("memex")
+LOGGER = logging.getLogger("memex.server")
 _cfg = None
 _conn = None
 _db_lock = None
@@ -33,6 +40,16 @@ SOURCE_LABEL_PATTERN = re.compile(r"^[A-Za-z0-9:_-]{1,64}$")
 MAX_TOOL_TEXT_CHARS = 100_000
 MAX_FACT_CHARS = 2_000
 _last_cleanup_at = 0
+STARTUP_BANNER = r"""
+ /$$      /$$ /$$$$$$$$ /$$      /$$ /$$$$$$$$ /$$   /$$
+| $$$    /$$$| $$_____/| $$$    /$$$| $$_____/| $$  / $$
+| $$$$  /$$$$| $$      | $$$$  /$$$$| $$      |  $$/ $$/
+| $$ $$/$$ $$| $$$$$   | $$ $$/$$ $$| $$$$$    \  $$$$/ 
+| $$  $$$| $$| $$__/   | $$  $$$| $$| $$__/     >$$  $$ 
+| $$\  $ | $$| $$      | $$\  $ | $$| $$       /$$/\  $$
+| $$ \/  | $$| $$$$$$$$| $$ \/  | $$| $$$$$$$$| $$  \ $$
+|__/     |__/|________/|__/     |__/|________/|__/  |__/                                                        
+"""
 
 
 def get_cfg():
@@ -585,27 +602,111 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     return [types.TextContent(type="text", text=f"Unknown tool: {name}")]
 
     except Exception:  # Server-stability guard
+        LOGGER.exception("Unhandled MCP tool error in %s", name)
         return [types.TextContent(type="text", text="Error: Internal memex server error.")]
 
 
-def main():
-    async def run():
-        async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-            await server.run(
-                read_stream,
-                write_stream,
-                InitializationOptions(
-                    server_name="memex",
-                    server_version="0.1.0",
-                    capabilities=server.get_capabilities(
-                        notification_options=NotificationOptions(),
-                        experimental_capabilities={},
-                    ),
-                ),
-            )
+def _default_log_file() -> Path:
+    return Path.home() / ".memex" / "server.log"
 
-    asyncio.run(run())
+
+def _configure_logging(level: str, log_file: Optional[str]) -> None:
+    handlers: list[logging.Handler] = [logging.StreamHandler(sys.stderr)]
+    if log_file:
+        log_path = Path(log_file).expanduser()
+        try:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            handlers.append(logging.FileHandler(log_path, encoding="utf-8"))
+        except OSError:
+            # Fall back to stderr-only logging if file cannot be opened.
+            pass
+
+    logging.basicConfig(
+        level=getattr(logging, level.upper(), logging.INFO),
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        handlers=handlers,
+    )
+
+
+def _spawn_background(log_file: str, log_level: str) -> int:
+    log_path = Path(log_file).expanduser()
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        print(f"Failed to prepare log directory for background mode: {e}", file=sys.stderr)
+        return 1
+
+    cmd = [sys.argv[0], "--log-level", log_level, "--log-file", str(log_path)]
+
+    try:
+        with open(log_path, "a", encoding="utf-8") as log_fh:
+            kwargs = {
+                "stdin": subprocess.DEVNULL,
+                "stdout": subprocess.DEVNULL,
+                "stderr": log_fh,
+            }
+            if os.name == "nt":
+                kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+                process = subprocess.Popen(cmd, **kwargs)
+            else:
+                process = subprocess.Popen(cmd, start_new_session=True, **kwargs)
+    except OSError as e:
+        print(f"Failed to start memex-server in background: {e}", file=sys.stderr)
+        return 1
+
+    print(f"memex-server started in background (pid={process.pid})")
+    print(f"Logs: {log_path}")
+    return 0
+
+
+async def _run_server() -> None:
+    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+        LOGGER.info("\n%s", STARTUP_BANNER.rstrip())
+        LOGGER.info("memex-server started...")
+        await server.run(
+            read_stream,
+            write_stream,
+            InitializationOptions(
+                server_name="memex",
+                server_version="0.1.0",
+                capabilities=server.get_capabilities(
+                    notification_options=NotificationOptions(),
+                    experimental_capabilities={},
+                ),
+            ),
+        )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(prog="memex-server", add_help=True)
+    parser.add_argument("--bg", action="store_true", help="Run memex-server in background.")
+    parser.add_argument(
+        "--log-file",
+        default=str(_default_log_file()),
+        help="Path to server log file. Default: ~/.memex/server.log",
+    )
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="Logging verbosity.",
+    )
+    args = parser.parse_args()
+
+    if args.bg:
+        return _spawn_background(args.log_file, args.log_level)
+
+    _configure_logging(args.log_level, args.log_file)
+    try:
+        asyncio.run(_run_server())
+        return 0
+    except KeyboardInterrupt:
+        LOGGER.info("memex-server stopped")
+        return 0
+    except Exception:
+        LOGGER.exception("memex-server crashed")
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

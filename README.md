@@ -65,6 +65,13 @@ MCP initialize smoke test:
 echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"0.0.1"}}}' | memex-server
 ```
 
+Run server manually with logging/background options:
+
+```bash
+memex-server --log-level INFO --log-file ~/.memex/server.log
+memex-server --bg --log-level INFO --log-file ~/.memex/server.log
+```
+
 ## 6. MCP app setup
 Use the `memex-server` command from your environment. If your app cannot find it, use your virtualenv binary path.
 
