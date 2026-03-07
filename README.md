@@ -1,5 +1,5 @@
 ## 1. What it is
-memex is a (No BS) local-first AI memory layer that stores atomic facts from notes and conversations in SQLite, embeds them with Ollama, and exposes memory through both a CLI (`memex`) and an MCP stdio server (`memex-server`) for tools like Cursor and Claude Desktop (and any agent that supports local MCP).
+memx is a (No BS) local-first AI memory layer that stores atomic facts from notes and conversations in SQLite, embeds them with Ollama, and exposes memory through both a CLI (`memx`) and an MCP stdio server (`memx-server`) for tools like Cursor and Claude Desktop (and any agent that supports local MCP).
 
 ## 2. Prerequisites
 - Python 3.11+
@@ -10,7 +10,7 @@ memex is a (No BS) local-first AI memory layer that stores atomic facts from not
 From repo root:
 
 ```bash
-cd memex
+cd memx
 python3 -m venv venv
 source venv/bin/activate
 python -m pip install -U pip
@@ -20,16 +20,16 @@ python -m pip install -e .
 Verify commands are installed:
 
 ```bash
-which memex
-which memex-server
-memex --help
+which memx
+which memx-server
+memx --help
 ```
 
 If your shell cannot find them, call absolute paths:
 
 ```bash
-./venv/bin/memex --help
-./venv/bin/memex-server
+./venv/bin/memx --help
+./venv/bin/memx-server
 ```
 
 ## 4. Ollama setup
@@ -46,7 +46,7 @@ ollama serve
 ```
 
 Optional model tuning:
-- Edit `~/.memex/config.toml`
+- Edit `~/.memx/config.toml`
 - Set `[ollama].embed_model` and `[ollama].extract_model`
 - If embed model dimension is not 768, set `[memory].embedding_dim` to match
 
@@ -54,26 +54,26 @@ Optional model tuning:
 Run these from a terminal with your venv activated:
 
 ```bash
-memex add "I prefer TypeScript over Python" --scope self
-memex list
-memex search "what language do I prefer"
+memx add "I prefer TypeScript over Python" --scope self
+memx list
+memx search "what language do I prefer"
 ```
 
 MCP initialize smoke test:
 
 ```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"0.0.1"}}}' | memex-server
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"0.0.1"}}}' | memx-server
 ```
 
 Run server manually with logging/background options:
 
 ```bash
-memex-server --log-level INFO --log-file ~/.memex/server.log
-memex-server --bg --log-level INFO --log-file ~/.memex/server.log
+memx-server --log-level INFO --log-file ~/.memx/server.log
+memx-server --bg --log-level INFO --log-file ~/.memx/server.log
 ```
 
 ## 6. MCP app setup
-Use the `memex-server` command from your environment. If your app cannot find it, use your virtualenv binary path.
+Use the `memx-server` command from your environment. If your app cannot find it, use your virtualenv binary path.
 
 ### Claude Desktop
 File: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)  
@@ -82,8 +82,8 @@ File: `%APPDATA%\\Claude\\claude_desktop_config.json` (Windows)
 ```json
 {
   "mcpServers": {
-    "memex": {
-      "command": "memex-server"
+    "memx": {
+      "command": "memx-server"
     }
   }
 }
@@ -95,8 +95,8 @@ File: `~/.cursor/mcp.json`
 ```json
 {
   "mcpServers": {
-    "memex": {
-      "command": "memex-server"
+    "memx": {
+      "command": "memx-server"
     }
   }
 }
@@ -108,8 +108,8 @@ File: `~/.codeium/windsurf/mcp_config.json`
 ```json
 {
   "mcpServers": {
-    "memex": {
-      "command": "memex-server"
+    "memx": {
+      "command": "memx-server"
     }
   }
 }
@@ -120,15 +120,15 @@ After editing config files, fully restart the app.
 ## 7. CLI command reference
 | Command | Description |
 |---|---|
-| `memex add <fact> [--scope] [--tags] [--source-label]` | Store one fact directly. |
-| `memex from [file|-] [--scope] [--tags] [--source-label] [--dry-run]` | Store from file/stdin; long input extracts atomic facts + summary. |
-| `memex search <query> [--scope] [--limit]` | Semantic search over memories. |
-| `memex list [--scope] [--source-label] [--expired]` | List memories by scope/label. |
-| `memex forget <id-or-prefix>` | Delete one memory by UUID or unique short prefix. |
-| `memex clear [--yes]` | Delete all memories with confirmation. |
-| `memex dedupe [--scope] [--source-label] [--apply] [--yes]` | Preview/remove near-duplicate memories. |
-| `memex dump [--scope] [--source-label] [--no-copy]` | Print context block and copy to clipboard. |
-| `memex info` | Show stats/config and clean expired records first. |
+| `memx add <fact> [--scope] [--tags] [--source-label]` | Store one fact directly. |
+| `memx from [file|-] [--scope] [--tags] [--source-label] [--dry-run]` | Store from file/stdin; long input extracts atomic facts + summary. |
+| `memx search <query> [--scope] [--limit]` | Semantic search over memories. |
+| `memx list [--scope] [--source-label] [--expired]` | List memories by scope/label. |
+| `memx forget <id-or-prefix>` | Delete one memory by UUID or unique short prefix. |
+| `memx clear [--yes]` | Delete all memories with confirmation. |
+| `memx dedupe [--scope] [--source-label] [--apply] [--yes]` | Preview/remove near-duplicate memories. |
+| `memx dump [--scope] [--source-label] [--no-copy]` | Print context block and copy to clipboard. |
+| `memx info` | Show stats/config and clean expired records first. |
 
 ## 8. MCP tool reference
 | Tool | Description |
@@ -150,11 +150,11 @@ After editing config files, fully restart the app.
 - Active duplicates in same scope are skipped
 
 ## 10. Config
-Runtime config: `~/.memex/config.toml`
+Runtime config: `~/.memx/config.toml`
 
 First run creates:
-- `~/.memex/config.toml`
-- `~/.memex/memory.db`
+- `~/.memx/config.toml`
+- `~/.memx/memory.db`
 
 Keys:
 - `[ollama].base_url`
@@ -175,12 +175,12 @@ Keys:
 
 ### End of session
 ```bash
-cat notes.txt | memex from - --scope project:myapp --source-label research:myapp
-memex list --scope project:myapp --source-label research:myapp
+cat notes.txt | memx from - --scope project:myapp --source-label research:myapp
+memx list --scope project:myapp --source-label research:myapp
 ```
 
 ### Clean old duplicates
 ```bash
-memex dedupe --scope project:myapp
-memex dedupe --scope project:myapp --apply
+memx dedupe --scope project:myapp
+memx dedupe --scope project:myapp --apply
 ```

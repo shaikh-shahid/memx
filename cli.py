@@ -9,7 +9,7 @@ from typing import Optional
 import typer
 
 app = typer.Typer(
-    name="memex",
+    name="memx",
     help="Local memory layer for AI tools.",
     no_args_is_help=True,
     add_completion=False,
@@ -582,7 +582,7 @@ def info():
     for m in memories:
         scopes[m.scope] = scopes.get(m.scope, 0) + 1
 
-    typer.echo("\nmemex info")
+    typer.echo("\nmemx info")
     typer.echo(f"  DB path:      {cfg.storage.db_path}")
     typer.echo(f"  Total facts:  {len(memories)}")
     typer.echo(f"  Expired (cleaned): {expired_count}")

@@ -33,7 +33,7 @@ def embed_text(text: str, model: str, base_url: str, timeout: int) -> list[float
         ) from e
     except httpx.TimeoutException as e:
         raise OllamaEmbeddingError(
-            f"Ollama timed out after {timeout}s. Try increasing timeout_seconds in ~/.memex/config.toml"
+            f"Ollama timed out after {timeout}s. Try increasing timeout_seconds in ~/.memx/config.toml"
         ) from e
     except httpx.HTTPStatusError as e:
         raise OllamaEmbeddingError(
