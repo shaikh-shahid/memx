@@ -1,5 +1,5 @@
 ## 1. What it is
-memex is a local-first memory layer that stores atomic facts from notes and conversations in SQLite, embeds them with Ollama, and exposes memory through both a CLI (`memex`) and an MCP stdio server (`memex-server`) for tools like Cursor and Claude Desktop.
+memex is a (No BS) local-first AI memory layer that stores atomic facts from notes and conversations in SQLite, embeds them with Ollama, and exposes memory through both a CLI (`memex`) and an MCP stdio server (`memex-server`) for tools like Cursor and Claude Desktop (and any agent that supports local MCP).
 
 ## 2. Prerequisites
 - Python 3.11+
@@ -10,7 +10,7 @@ memex is a local-first memory layer that stores atomic facts from notes and conv
 From repo root:
 
 ```bash
-cd <memex-repo>
+cd memex
 python3 -m venv venv
 source venv/bin/activate
 python -m pip install -U pip
