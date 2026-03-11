@@ -1,0 +1,13 @@
+[ollama]
+base_url = "http://localhost:11434"
+embed_model = "nomic-embed-text"
+extract_model = "llama3.2:3b"
+timeout_seconds = 30
+
+[storage]
+db_path = "~/.memx/memory.db"
+
+[memory]
+extract_threshold_chars = 300
+default_scope = "self"
+project_ttl_days = 30

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-PACKAGE_CONFIG = Path(__file__).parent.parent / "config.toml"
+PACKAGE_CONFIG = Path(__file__).parent / "config.toml"
 USER_CONFIG_DIR = Path.home() / ".memx"
 USER_CONFIG = USER_CONFIG_DIR / "config.toml"
 LEGACY_CONFIG_DIR = Path.home() / ".memex"

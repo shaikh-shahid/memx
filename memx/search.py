@@ -4,7 +4,7 @@ import struct
 import time
 from typing import Optional
 
-from memex.db import Memory
+from memx.db import Memory
 
 
 def search_memories(

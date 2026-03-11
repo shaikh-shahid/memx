@@ -6,7 +6,26 @@ build-backend = "hatchling.build"
 name = "memx"
 version = "0.1.0"
 description = "Local memory layer for AI tools via MCP"
+readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.11"
+authors = [
+    { name = "Shahid Shaikh" },
+]
+keywords = ["mcp", "memory", "ai", "ollama", "llm", "sqlite", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Utilities",
+]
 dependencies = [
     "typer>=0.12.0",
     "mcp>=1.0.0",
@@ -15,9 +34,17 @@ dependencies = [
     "pyperclip>=1.8.2",
 ]
 
+[project.urls]
+Homepage = "https://github.com/shaikh-shahid/memx"
+Repository = "https://github.com/shaikh-shahid/memx"
+"Bug Tracker" = "https://github.com/shaikh-shahid/memx/issues"
+
 [project.scripts]
-memx = "cli:app"
-memx-server = "server:main"
+memx = "memx.cli:app"
+memx-server = "memx.server:main"
+
+[tool.hatch.build]
+artifacts = ["memx/config.toml"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["memex"]
+packages = ["memx"]

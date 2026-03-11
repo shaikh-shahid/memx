@@ -16,8 +16,8 @@ from mcp.server import Server
 from mcp.server.lowlevel.server import NotificationOptions
 from mcp.server.models import InitializationOptions
 
-from memex.config import load_config
-from memex.db import (
+from memx.config import load_config
+from memx.db import (
     delete_expired,
     delete_memory,
     get_all_memories,
@@ -26,9 +26,9 @@ from memex.db import (
     init_db,
     store_memory,
 )
-from memex.embeddings import OllamaEmbeddingError, embed_text
-from memex.extraction import OllamaExtractionError, dedupe_and_filter_facts, extract_facts, summarize_text
-from memex.search import search_memories
+from memx.embeddings import OllamaEmbeddingError, embed_text
+from memx.extraction import OllamaExtractionError, dedupe_and_filter_facts, extract_facts, summarize_text
+from memx.search import search_memories
 
 server = Server("memx")
 LOGGER = logging.getLogger("memx.server")
@@ -41,14 +41,14 @@ MAX_TOOL_TEXT_CHARS = 100_000
 MAX_FACT_CHARS = 2_000
 _last_cleanup_at = 0
 STARTUP_BANNER = r"""
- /$$      /$$ /$$$$$$$$ /$$      /$$ /$$$$$$$$ /$$   /$$
-| $$$    /$$$| $$_____/| $$$    /$$$| $$_____/| $$  / $$
-| $$$$  /$$$$| $$      | $$$$  /$$$$| $$      |  $$/ $$/
-| $$ $$/$$ $$| $$$$$   | $$ $$/$$ $$| $$$$$    \  $$$$/ 
-| $$  $$$| $$| $$__/   | $$  $$$| $$| $$__/     >$$  $$ 
-| $$\  $ | $$| $$      | $$\  $ | $$| $$       /$$/\  $$
-| $$ \/  | $$| $$$$$$$$| $$ \/  | $$| $$$$$$$$| $$  \ $$
-|__/     |__/|________/|__/     |__/|________/|__/  |__/                                                        
+ /$$      /$$ /$$$$$$$$ /$$      /$$| $$   /$$
+| $$$    /$$$| $$_____/| $$$    /$$$| $$  / $$
+| $$$$  /$$$$| $$      | $$$$  /$$$$|  $$/ $$/
+| $$ $$/$$ $$| $$$$$   | $$ $$/$$ $$| \ $$$$/ 
+| $$  $$$| $$| $$__/   | $$  $$$| $$|  >$$  $$ 
+| $$\  $ | $$| $$      | $$\  $ | $$| /$$/\  $$
+| $$ \/  | $$| $$$$$$$$| $$ \/  | $$|  $$  \ $$
+|__/     |__/|________/|__/     |__/|__/  |__/                                                        
 """
 
 
