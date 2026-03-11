@@ -83,11 +83,12 @@ File: `%APPDATA%\\Claude\\claude_desktop_config.json` (Windows)
 {
   "mcpServers": {
     "memx": {
-      "command": "memx-server"
+      "command": "<path>/memx/venv/bin/memx-server"
     }
   }
 }
 ```
+Replace `path` with your local path.
 
 ### Claude Code
 Run this command to add MemX MCP server to Claude code.
@@ -103,11 +104,12 @@ File: `~/.cursor/mcp.json`
 {
   "mcpServers": {
     "memx": {
-      "command": "memx-server"
+      "command": "<path>/memx/venv/bin/memx-server"
     }
   }
 }
 ```
+Replace `path` with your local path.
 
 ### Windsurf
 File: `~/.codeium/windsurf/mcp_config.json`
@@ -116,11 +118,12 @@ File: `~/.codeium/windsurf/mcp_config.json`
 {
   "mcpServers": {
     "memx": {
-      "command": "memx-server"
+      "command": "<path>/memx/venv/bin/memx-server"
     }
   }
 }
 ```
+Replace `path` with your local path.
 
 After editing config files, fully restart the app.
 
