@@ -89,6 +89,13 @@ File: `%APPDATA%\\Claude\\claude_desktop_config.json` (Windows)
 }
 ```
 
+### Claude Code
+Run this command to add MemX MCP server to Claude code.
+```bash
+claude mcp add memx <path>/memx/venv/bin/memx-server
+```
+Replace `path` with your local path.
+
 ### Cursor (global)
 File: `~/.cursor/mcp.json`
 
