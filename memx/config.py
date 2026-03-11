@@ -7,7 +7,7 @@ from typing import Any
 PACKAGE_CONFIG = Path(__file__).parent / "config.toml"
 USER_CONFIG_DIR = Path.home() / ".memx"
 USER_CONFIG = USER_CONFIG_DIR / "config.toml"
-LEGACY_CONFIG_DIR = Path.home() / ".memex"
+LEGACY_CONFIG_DIR = Path.home() / ".memx"
 LEGACY_CONFIG = LEGACY_CONFIG_DIR / "config.toml"
 
 
@@ -52,7 +52,7 @@ def load_config() -> Config:
     with open(PACKAGE_CONFIG, "rb") as f:
         data = tomllib.load(f)
 
-    # Best-effort migration from legacy memex directory on first memx run.
+    # Best-effort migration from legacy memx directory on first memx run.
     if not USER_CONFIG_DIR.exists() and LEGACY_CONFIG_DIR.exists():
         try:
             shutil.copytree(LEGACY_CONFIG_DIR, USER_CONFIG_DIR, dirs_exist_ok=True)

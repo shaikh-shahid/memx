@@ -50,8 +50,8 @@ def _validate_source_label(source_label: Optional[str]) -> Optional[str]:
 
 
 def _load_deps():
-    from memex.config import load_config
-    from memex.db import delete_expired, get_connection, init_db
+    from memx.config import load_config
+    from memx.db import delete_expired, get_connection, init_db
 
     return load_config, get_connection, init_db, delete_expired
 
@@ -98,8 +98,8 @@ def add(
     source_label: Optional[str] = typer.Option(None, "--source-label", help="Optional source grouping label"),
 ):
     """Add a single fact directly to memory."""
-    from memex.db import has_active_memory, store_memory
-    from memex.embeddings import OllamaEmbeddingError, embed_text
+    from memx.db import has_active_memory, store_memory
+    from memx.embeddings import OllamaEmbeddingError, embed_text
 
     _validate_scope(scope)
     source_label = _validate_source_label(source_label)
@@ -147,9 +147,9 @@ def from_input(
     dry_run: bool = typer.Option(False, "--dry-run", help="Show extracted facts without storing"),
 ):
     """Extract facts from a file or stdin and store them."""
-    from memex.db import has_active_memory, store_memory
-    from memex.embeddings import OllamaEmbeddingError, embed_text
-    from memex.extraction import OllamaExtractionError, dedupe_and_filter_facts, extract_facts, summarize_text
+    from memx.db import has_active_memory, store_memory
+    from memx.embeddings import OllamaEmbeddingError, embed_text
+    from memx.extraction import OllamaExtractionError, dedupe_and_filter_facts, extract_facts, summarize_text
 
     _validate_scope(scope)
     source_label = _validate_source_label(source_label)
@@ -282,8 +282,8 @@ def search(
     limit: int = typer.Option(5, "--limit", "-n", help="Number of results"),
 ):
     """Search memories semantically."""
-    from memex.embeddings import OllamaEmbeddingError, embed_text
-    from memex.search import search_memories
+    from memx.embeddings import OllamaEmbeddingError, embed_text
+    from memx.search import search_memories
 
     if scope:
         _validate_scope(scope)
@@ -326,7 +326,7 @@ def list_memories(
     show_expired: bool = typer.Option(False, "--expired", help="Include expired memories"),
 ):
     """List all stored memories."""
-    from memex.db import get_all_memories
+    from memx.db import get_all_memories
 
     if scope:
         _validate_scope(scope)
@@ -371,7 +371,7 @@ def forget(
     memory_id: str = typer.Argument(..., help="Memory ID or first 8 chars of ID"),
 ):
     """Delete a specific memory by ID."""
-    from memex.db import delete_memory, get_all_memories
+    from memx.db import delete_memory, get_all_memories
 
     cfg = _load_config_or_exit()
     conn = _open_conn_or_exit(cfg)
@@ -410,7 +410,7 @@ def clear(
     ),
 ):
     """Delete all memories after confirmation."""
-    from memex.db import delete_all_memories
+    from memx.db import delete_all_memories
 
     cfg = _load_config_or_exit()
     conn = _open_conn_or_exit(cfg)
@@ -442,8 +442,8 @@ def dedupe(
     """Find and optionally delete near-duplicate memories."""
     import difflib
 
-    from memex.db import delete_memory, get_all_memories
-    from memex.extraction import normalize_fact
+    from memx.db import delete_memory, get_all_memories
+    from memx.extraction import normalize_fact
 
     if scope:
         _validate_scope(scope)
@@ -516,7 +516,7 @@ def dump(
     no_copy: bool = typer.Option(False, "--no-copy", help="Print only, don't copy to clipboard"),
 ):
     """Dump memory context block to clipboard (for pasting into ChatGPT etc.)."""
-    from memex.db import get_all_memories
+    from memx.db import get_all_memories
 
     if scope:
         _validate_scope(scope)
@@ -538,7 +538,7 @@ def dump(
     for m in memories:
         grouped.setdefault(m.scope, []).append(m)
 
-    lines = ["--- MEMEX CONTEXT ---"]
+    lines = ["--- memx CONTEXT ---"]
     lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     lines.append("")
 
@@ -566,7 +566,7 @@ def dump(
 @app.command()
 def info():
     """Show memory statistics and config."""
-    from memex.db import get_all_memories
+    from memx.db import get_all_memories
 
     cfg = _load_config_or_exit()
     conn = _open_conn_or_exit(cfg)
